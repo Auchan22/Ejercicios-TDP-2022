@@ -7,7 +7,10 @@ d. Implemente un módulo recursivo que devuelva verdadero si un valor determinad
 }
 
 program ej3P2;
+const
+	maxNums = 100;
 type
+	rangoNums = 1..maxNums;
 	lista = ^nodo;
 	nodo = record
 		num: integer;
@@ -54,9 +57,26 @@ begin
 	end;
 	min:= minNum;
 end;
+function esta(L: lista; num: integer): boolean;
+var
+	ok: boolean;
+begin
+	ok:= false;
+	if (L <> nil) and (not ok) then begin
+		if (L^.num = num) then begin
+			ok:= true;
+			esta:= ok;
+		end
+		else begin
+			L:= L^.sig;
+			esta:= esta(L, num);
+		end;
+	end;
+end;
 var
 	L: lista;
-	maxNum, maxEncontrado, minNum, minEncontrado: integer;
+	maxNum, maxEncontrado: integer;
+	minNum, minEncontrado: integer;
 begin
 	generarLista(L);
 	imprimirLista(L);
@@ -66,4 +86,5 @@ begin
 	minEncontrado:= min(L, minNum);
 	writeln('Maximo: ',maxEncontrado);
 	writeln('Minimo: ',minEncontrado);
+	writeln(esta(L, 85));
 end.

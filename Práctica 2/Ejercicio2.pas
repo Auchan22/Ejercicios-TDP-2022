@@ -9,25 +9,13 @@ procedure leerNum (var n: integer);
 	
 	procedure descomponerNum(num: integer);
 	var
-		n, c, exp: integer;
+		dig: integer;
 	begin
-		c:= 0;
 		if(num <> 0) then begin
-			n:= num;
-			while(n >= 10) do begin
-				n:= n DIV 10;
-				c:= c + 1;
-			end;
-			writeln(n);
-			exp:= 1;
-			repeat begin
-				exp:= exp * 10;
-				c:= c - 1;
-			end;
-			until (c = 0);
-			writeln(exp);
-			num := num MOD exp;
+			dig:= num MOD 10;
+			num:= num DIV 10;
 			descomponerNum(num);
+			writeln(dig); {Se va a ejecutar cuando se devuelva el control al bloque, por lo tanto, si recibimos el 256, en la 1er etapa, dig contendra 6, en la 2da, 5, y en la 3ra, 2, pero solo se mostrara a medida que retorne el control, por lo que la etapa base se lo devuelve a la 3, imprimiendo 2, la etapaa 3 se lo devuelve a la 2, imprimiendo 5, y la etapa 2 se lo devuelve a la 1, imprimiendo 6}
 		end;
 	end;
 

@@ -12,68 +12,124 @@ g. Implemente un módulo recursivo que reciba la lista generada en d. e imprima 
 }
 
 program ej1P2;
-const 
+const
 	DIMF = 10;
 type
-	arrCaracter = array[1..DIMF] of char;
-function ingresoPunto (c: char): boolean;
-begin
-	ingresoPunto:= c = '.';
-end;
-procedure cargarVector (var v: arrCaracter; var dimL: integer);
+	rangoVector = 1..DIMF;
+	arrCaracteres = array[rangoVector] of char;
+	lista = ^nodo;
+	nodo = record
+		c: char;
+		sig: lista;
+	end;
+procedure generarVector (var v: arrCaracteres; var dimL: integer);
 var
 	c: char;
 begin
-	writeln('Ingrese caracter: ');
+	writeln('Ingresa un caracter: ');
 	readln(c);
-	if (dimL <= DIMF) and (not ingresoPunto(c))then begin
-		dimL:= dimL + 1;
-		v[dimL]:= c;
-		cargarVector(v, dimL)
+	if(c <> '.') and (dimL < 10) then begin
+			dimL:= dimL + 1;
+			v[dimL]:= c;
+			generarVector(v, dimL);
 	end;
 end;
-procedure imprimirVector (v: arrCaracter; dimL: integer);
+procedure imprimirVector(v: arrCaracteres; dimL: integer);
 var
 	i: integer;
 begin
-	for i := 1 to dimL do begin
+	for i:= 1 to dimL do
 		writeln(v[i]);
-	end;
 end;
-procedure imprimirVectorRecursivo (v: arrCaracter; dimL, i: integer);
+procedure imprimirVectorRecursivo (v: arrCaracteres; dimL: integer);
 begin
-	if(dimL > 0) then begin
-		writeln(v[i]);
-		i:= i + 1;
-		imprimirVectorRecursivo(v, (dimL - 1), i);
+	if(dimL = 1) then
+		writeln('Inicial: ',v[dimL])
+	else begin
+		writeln('Antes: ', v[dimL], ' DimL: ', dimL); //Escribe al reves de la forma que se ingresaron los valores
+		imprimirVectorRecursivo(v, dimL - 1);
+		writeln('Despues: ', v[dimL], ' DimL: ', dimL);
 	end;
 end;
-procedure contarCaracteres (var cont: integer);
+procedure cantidadCaracteres (var cont: integer);
 var
 	c: char;
 begin
-	writeln('Ingrese caracter: ');
+	writeln('Ingrese un caracter: ');
 	readln(c);
-	if (not ingresoPunto(c)) then begin
+	if (c <> '.') then begin
 		cont:= cont + 1;
-		contarCaracteres(cont);
+		cantidadCaracteres(cont);
+	end;
+end;
+procedure generarLista (var L: lista);
+	procedure agregarAdelante (var L: lista; c: char);
+	var
+		nuevo: lista;
+	begin
+		new(nuevo);
+		nuevo^.c:= c;
+		nuevo^.sig:= L;
+		if (L = nil) then
+			L:= nuevo
+		else begin
+			nuevo^.sig:= L;
+			L:= nuevo;
+		end;
+	end;
+	
+var
+	c: char;
+begin
+	writeln('Ingrese un caracter: ');
+	readln(c);
+	if (c <> '.') then begin
+		agregarAdelante(L, c);
+		generarLista(L);
+	end;
+end;
+procedure imprimirLista (L: lista);
+begin
+	if(L <> nil) then begin
+		writeln('Caracter: ', L^.c);
+		L:= L^.sig;
+		imprimirLista(L);
+	end;
+end;
+procedure imprimirListaInverso (L: lista);
+begin
+	if (L^.sig = nil) then
+		writeln('Caracter: ', L^.c)
+	else begin
+		L:= L^.sig;
+		imprimirListaInverso(L);
+		writeln('Caracter: ', L^.c);
 	end;
 end;
 var
-	v: arrCaracter;
-	dimL, i, cont: integer;
+	v: arrCaracteres;
+	dimL, cant: integer;
+	L: lista;
 begin
 	dimL:= 0;
-	i:= 1;
-	cont:= 0;
-	cargarVector(v, dimL); {Inciso A}
-	if(dimL = 0) then begin
-		writeln('Vector Vacio');
-	end
+	L:= nil;
+	generarVector(v, dimL);
+	if (dimL = 0) then
+		writeln('Vector Vacio')
 	else begin
-		imprimirVector(v, dimL); {Inciso B}
-		imprimirVectorRecursivo(v, dimL, i); {Inciso C}
+		imprimirVector(v, dimL);
+		writeln('---');
+		imprimirVectorRecursivo(v, dimL);
 	end;
-	contarCaracteres(cont); {Inciso D}
-	writeln(cont);
+	cantidadCaracteres(cant);
+	writeln('Cantidad Caracteres: ', cant);
+	writeln('---');
+	generarLista(L);
+	if (L = nil) then
+		writeln('Lista vacia')
+	else begin
+		imprimirLista(L);
+		writeln('---');
+		imprimirListaInverso(L);
+	end;
 end.
