@@ -96,19 +96,52 @@ begin
 		else
 			buscarPorNum:= buscarPorNum(a^.HD, num);
 end;
-function buscarPorNombre(a: arbol; nombre: string):boolean;
-begin
-	if (a <> nil) then begin
-		buscarPorNombre(a^.HI, nombre);
-		buscarPorNombre(a^.HD, nombre);
-		buscarPorNombre:= a^.dato.nombre = nombre;
+procedure buscarPorNombre(a: arbol);
+	function buscar(a: arbol; nombre: string): boolean;
+	begin
+		if (a = nil) then
+			buscar:= false
+		else
+			buscar:= (a^.dato.nombre = nombre) or buscar(a^.HI, nombre) or buscar(a^.HD, nombre) 
 	end;
+var
+	encontre: boolean;
+	nombre: string[20];
+begin
+	writeln('Ingres el nombre del socio a buscar: ');
+	readln(nombre);
+	encontre:= buscar(a, nombre);
+	if(encontre) then
+		writeln('El nombre: ', nombre, ' existe')
+	else
+		writeln('El nombre: ', nombre, ' no existe');
+end;
+function contarSocios(a: arbol): integer;
+begin
+	if (a = nil) then
+		contarSocios:= 1
+	else begin
+		contarSocios:= contarSocios(a^.HI) + 1;
+		contarSocios:= contarSocios(a^.HD) + 1;
+	end;
+end;
+procedure edadPromedio(a: arbol);
+	function totalEdad(a: arbol): integer;
+	begin
+		if (a = nil) then
+			totalEdad:= 0
+		else begin
+			totalEdad:= totalEdad(a^.HI) + a^.dato.edad;
+			totalEdad:= totalEdad(a^.HD) + a^.dato.edad;
+		end;
+	end;
+begin
+	writeln('El promedio de edad es: ', totalEdad(a) div contarSocios(a));
 end;
 var
 	a: arbol;
 	s: socio;
 	maxEdad, num: integer;
-	nombre: string;
 begin
 	a:= nil;
 	maxEdad:= 0;
@@ -133,10 +166,7 @@ begin
 	else
 		writeln('No se encuentra cargado :P');
 	writeln('---');
-	writeln('Ingrese el nombre del socio a buscar: ');
-	readln(nombre);
-	if(buscarPorNombre(a, nombre)) then
-		writeln('Lo encontramos!')
-	else
-		writeln('No se encuentra cargado :P');
+	buscarPorNombre(a);
+	writeln('Cantidad socios: ', contarSocios(a));
+	edadPromedio(a);
 end.
